@@ -25,3 +25,5 @@ Route::resource('categories','CategoriesController');
 
 //post routes using resource
 Route::resource('posts','PostsController');
+
+Route::get('trashed-post','PostsController@trashed')->name('trashed-posts.index');

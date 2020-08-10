@@ -8,7 +8,7 @@
     </div>
 
     <div class="card-body">
-        <form action="{{route('posts.store')}}" method="POST">
+        <form action="{{route('posts.store')}}" method="POST" enctype="multipart/form-data">
 
             @csrf
             <div class="form-group">
@@ -31,8 +31,14 @@
             </div>
 
             <div class="form-group">
-                <label for="image">Published At</label>
+                <label for="image">Image</label>
                 <input type="file" class="form-control" name="image" id="image">
+            </div>
+
+            <div class="form-group">
+                <button class="btn btn-success" type="submit">
+                    Create Post
+                </button>
             </div>
         </form>
     </div>

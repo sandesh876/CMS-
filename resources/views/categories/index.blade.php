@@ -8,29 +8,35 @@
     <div class="card-header">
         Categories
     </div>
+    @if ($categories->count()>0)
     <div class="card-body">
-        <table class="table">
-            <thead>
-                <th>Name</th>
-                <th></th>
-            </thead>
-            <tbody>
-                @foreach ($categories as $category)
-                <tr>
-                    <td>
-                        {{$category->name}}
-                     </td> 
-                     <td>
-                     <a href="{{route('categories.edit',$category->id)}}" class="btn btn-info btn-sm">Edit</a>
-                     
-                     <button class="btn btn-danger btn-sm ml-0" onclick="handleDelete({{$category->id}})">Delete</button>
+      <table class="table">
+          <thead>
+              <th>Name</th>
+              <th></th>
+          </thead>
+          <tbody>
+              @foreach ($categories as $category)
+              <tr>
+                  <td>
+                      {{$category->name}}
+                   </td> 
+                   <td>
+                   <a href="{{route('categories.edit',$category->id)}}" class="btn btn-info btn-sm">Edit</a>
+                   
+                   <button class="btn btn-danger btn-sm ml-0" onclick="handleDelete({{$category->id}})">Delete</button>
 
-                     </td>
-                </tr>
-            
-                @endforeach
-            </tbody>
-        </table>
+                   </td>
+              </tr>
+          
+              @endforeach
+          </tbody>
+      </table>
+    </div>
+    @else
+    <p class="text-center mt-2">No Categories yet</p>
+        
+    @endif
         <!-- Modal -->
 <div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
     <div class="modal-dialog">
@@ -55,7 +61,6 @@
             </div>
           </div>
       </form>
-    </div>
   </div>
     </div>
 </div>

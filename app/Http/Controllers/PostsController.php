@@ -3,6 +3,9 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Http\Requests\Post\CreatePostRequest;
+use App\Post;
+use Illuminate\Support\Facades\Storage;
 
 class PostsController extends Controller
 {
@@ -13,7 +16,8 @@ class PostsController extends Controller
      */
     public function index()
     {
-        return view('posts.index');
+        $posts = Post::all();
+        return view('posts.index')->with('posts',$posts);
     }
 
     /**
@@ -32,9 +36,23 @@ class PostsController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(CreatePostRequest $request)
     {
-        //
+        //upload image to the storage
+        $image = $request->image->store('posts');
+        //create the post
+
+        Post::create([
+            'title' => $request->title,
+            'content' =>$request->content,
+            'description' =>$request->description,
+            'image' =>$image
+        ]);
+        //flash the message
+        session()->flash('success','Post created successfully');
+        //redirect user
+
+        return redirect(route('posts.index'));
     }
 
     /**
@@ -79,6 +97,32 @@ class PostsController extends Controller
      */
     public function destroy($id)
     {
-        //
+        $post = Post::withTrashed()->where('id',$id)->firstOrFail();
+
+        //permanently delete
+        if($post->trashed())
+        {
+            Storage::delete($post->image);
+            $post->forceDelete();
+        }
+        else{
+            $post->delete();
+        }
+        session()->flash('success','Post deleted successfully');
+        return redirect(route('posts.index'));
+
+    }
+
+    /**
+     * display all the trashed posts.
+     *
+     *
+     * @return \Illuminate\Http\Response
+     */
+
+    public function trashed(){
+        $trashed = Post::withTrashed()->get();
+
+        return view('posts.index')->withPosts($trashed);
     }
 }
