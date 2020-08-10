@@ -46,7 +46,8 @@ class PostsController extends Controller
             'title' => $request->title,
             'content' =>$request->content,
             'description' =>$request->description,
-            'image' =>$image
+            'image' =>$image,
+            'published_at'=>$request->published_at
         ]);
         //flash the message
         session()->flash('success','Post created successfully');
