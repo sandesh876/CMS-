@@ -8,6 +8,7 @@
     </div>
 
     <div class="card-body">
+        @include('partial.errors')
         <form action="{{isset($post) ? route('posts.update',$post->id) : route('posts.store')}}" method="POST" enctype="multipart/form-data">
 
             @csrf
@@ -33,17 +34,55 @@
                 <label for="published_at">Published At</label>
             <input type="text" class="form-control" name="published_at" id="published_at" value="{{isset($post) ? $post->published_at : ''}}">
             </div>
-@if (isset($post))
-    <div class="form-group">
+            @if (isset($post))
+             <div class="form-group">
             <img src="{{asset("storage/".$post->image)}}" alt="" style="width:100%;">
-    </div>
-@endif
+             </div>
+            @endif
             
             <div class="form-group">
                 <label for="image">Image</label>
                 <input type="file" class="form-control" name="image" id="image">
             </div>
 
+            <div class="form-group">
+                <label for="category">Category</label>
+                <select name="category" id="category" class="form-control">
+                    @foreach ($categories as $category)
+                <option value="{{$category->id}}"
+                   @if (isset($post))
+                        @if ($category->id == $post->category_id)
+                        selected  
+                        @endif  
+                   @endif
+                    >
+                        {{$category->name}}
+                </option>
+                    @endforeach
+                </select>
+            </div>
+        @if ($tags->count()>0)
+        <div class="form-group">
+             <label for="tags">Tags</label>
+
+                <select name="tags[]" id="tags" class="form-control" multiple>
+
+             @foreach ($tags as $tag)
+            <option value="{{$tag->id}}"
+               @if (isset($post))
+               @if ($post->hasTag($tag->id))
+               selected
+                @endif
+               @endif
+                
+                >
+             {{$tag->name}}
+                </option>
+            @endforeach
+             </select>
+        </div>
+        @endif
+            
             <div class="form-group">
                 <button class="btn btn-success" type="submit">
                    {{isset($post) ? 'Update Post' : 'Create Post'}}

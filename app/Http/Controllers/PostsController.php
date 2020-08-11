@@ -7,15 +7,25 @@ use App\Http\Requests\Post\CreatePostRequest;
 use App\Http\Requests\Post\UpdatePostRequest;
 
 use App\Post;
+use App\Category;
+use App\Tag;
 
 
 class PostsController extends Controller
 {
+
+    public function __construct()
+    {
+        //applying custom middleware to only create and store functions
+        $this->middleware('verifyCategoriesCount')->only(['create','store']);
+    }
     /**
      * Display a listing of the resource.
      *
      * @return \Illuminate\Http\Response
      */
+
+
     public function index()
     {
         $posts = Post::all();
@@ -29,7 +39,7 @@ class PostsController extends Controller
      */
     public function create()
     {
-       return view('posts.create');
+       return view('posts.create')->with('categories',Category::all())->with('tags',Tag::all());
     }
 
     /**
@@ -40,17 +50,25 @@ class PostsController extends Controller
      */
     public function store(CreatePostRequest $request)
     {
+        
         //upload image to the storage
         $image = $request->image->store('posts');
         //create the post
 
-        Post::create([
+        $post=Post::create([
             'title' => $request->title,
             'content' =>$request->content,
             'description' =>$request->description,
             'image' =>$image,
-            'published_at'=>$request->published_at
+            'published_at'=>$request->published_at,
+            'category_id' =>$request->category
         ]);
+
+        if($request->tags)
+        {
+            //attaching multiple tags to a post
+            $post->tags()->attach($request->tags);
+        }
         //flash the message
         session()->flash('success','Post created successfully');
         //redirect user
@@ -77,7 +95,7 @@ class PostsController extends Controller
      */
     public function edit(Post $post)
     {
-        return view('posts.create')->with('post',$post);
+        return view('posts.create')->with('post',$post)->with('categories',Category::all())->with('tags',Tag::all());
     }
 
     /**
@@ -100,6 +118,15 @@ class PostsController extends Controller
             $post->deleteImage();  //function is defined in Post model for deleting image from storage
 
             $data['image'] = $image;
+
+
+        }
+
+
+        //sync method for many to many reln
+        if($request->tags){
+            $post->tags()->sync($request->tags);
+
         }
        
         

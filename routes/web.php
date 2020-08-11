@@ -19,13 +19,22 @@ Route::get('/', function () {
 
 Auth::routes();
 
-Route::get('/home', 'HomeController@index')->name('home');
-//routes for categories created using resource
-Route::resource('categories','CategoriesController');
 
-//post routes using resource
-Route::resource('posts','PostsController');
 
-Route::get('trashed-post','PostsController@trashed')->name('trashed-posts.index');
+//use of route group 
 
-Route::put('restore-post/{post}','PostsController@restore')->name('restore-post');
+Route::middleware('auth')->group(function(){
+    Route::get('/home', 'HomeController@index')->name('home');
+    //routes for categories created using resource
+    Route::resource('categories','CategoriesController');
+    
+    //post routes using resource
+    Route::resource('posts','PostsController')->middleware('auth');
+    
+    Route::get('trashed-post','PostsController@trashed')->name('trashed-posts.index');
+    
+    Route::put('restore-post/{post}','PostsController@restore')->name('restore-post');
+
+    Route::resource('tags','TagsController');
+
+});
